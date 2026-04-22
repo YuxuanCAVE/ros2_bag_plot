@@ -57,9 +57,11 @@ python3 scripts/export_controller_command_csv.py bags/run_001
 python3 scripts/plot_controller_results.py bags/run_001
 ```
 
-Batch plotting for all bag folders:
+Batch export and plotting for all bag folders:
 
 ```bash
+python3 scripts/export_controller_record_csv.py bags --batch
+python3 scripts/export_controller_command_csv.py bags --batch
 python3 scripts/plot_controller_results.py bags --batch
 ```
 
@@ -73,9 +75,11 @@ python .\scripts\export_controller_command_csv.py .\bags\run_001
 python .\scripts\plot_controller_results.py .\bags\run_001
 ```
 
-Batch plotting for all bag folders:
+Batch export and plotting for all bag folders:
 
 ```powershell
+python .\scripts\export_controller_record_csv.py .\bags --batch
+python .\scripts\export_controller_command_csv.py .\bags --batch
 python .\scripts\plot_controller_results.py .\bags --batch
 ```
 

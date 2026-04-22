@@ -54,6 +54,11 @@ def parse_args() -> argparse.Namespace:
         default=CONTROLLER_RECORD_TOPIC,
         help=f"Topic to export. Defaults to {CONTROLLER_RECORD_TOPIC}.",
     )
+    parser.add_argument(
+        "--batch",
+        action="store_true",
+        help="Treat bag_path as a directory containing multiple bag folders.",
+    )
     return parser.parse_args()
 
 
@@ -142,11 +147,28 @@ def export_topic_to_csv(bag_path: Path, output_path: Path, topic: str) -> int:
     return rows_written
 
 
+def export_batch(root_dir: Path, topic: str) -> None:
+    bag_dirs = sorted(path for path in root_dir.iterdir() if path.is_dir())
+    for bag_dir in bag_dirs:
+        try:
+            output_path = build_output_path(bag_dir, None)
+            rows_written = export_topic_to_csv(bag_dir, output_path, topic)
+            print(f"Exported {rows_written} messages from {topic} to {output_path}")
+        except Exception as exc:
+            print(f"Skipped {bag_dir}: {exc}")
+
+
 def main() -> int:
     args = parse_args()
     bag_path = Path(args.bag_path).expanduser().resolve()
     if not bag_path.exists():
         raise FileNotFoundError(f"Bag path does not exist: {bag_path}")
+
+    if args.batch:
+        if not bag_path.is_dir():
+            raise ValueError("--batch requires bag_path to be a directory.")
+        export_batch(bag_path, args.topic)
+        return 0
 
     output_path = build_output_path(bag_path, args.output)
     rows_written = export_topic_to_csv(bag_path, output_path, args.topic)
